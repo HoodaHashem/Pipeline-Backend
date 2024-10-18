@@ -24,12 +24,11 @@ export const signInValidationSchema = {
     },
     custom: {
       options: async (value, { req }) => {
-        if (!req.user) {
-          return Promise.reject("User not found");
-        }
-        const isMatch = await bcrypt.compare(value, req.user.password);
-        if (!isMatch) {
-          return Promise.reject("Incorrect password");
+        if (req.user) {
+          const isMatch = await bcrypt.compare(value, req.user.password);
+          if (!isMatch) {
+            return Promise.reject("Incorrect password");
+          }
         }
       },
     },

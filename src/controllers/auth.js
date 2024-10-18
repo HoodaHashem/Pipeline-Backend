@@ -60,7 +60,6 @@ export const signIn = asyncHandler(async (req, res) => {
     secure: true,
     sameSite: "none",
   });
-  delete req.user;
   res.status(200).json({
     status: "success",
     message: "User logged in successfully",

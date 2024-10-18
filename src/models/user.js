@@ -25,16 +25,20 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  photo: {
+    type: String,
+  },
+  friends: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   passwordResetToken: {
     type: String,
   },
   passwordResetExpires: {
     type: Date,
-  },
-  role: {
-    type: String,
-    enum: ["user", "admin"],
-    default: "user",
   },
   isValid: {
     type: Boolean,
@@ -43,6 +47,7 @@ const userSchema = new Schema({
   validationToken: {
     type: String,
   },
+
   createdAt: {
     type: Date,
     default: Date.now,

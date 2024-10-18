@@ -8,6 +8,9 @@ import globalErrors from "./middlewares/globalErrors.js";
 import authRouter from "./routes/auth.js";
 import adminRouter from "./routes/admin.js";
 import rateLimiter from "./utils/rateLimiter.js";
+import usersRouter from "./routes/users.js";
+import friendsRouter from "./routes/friends.js";
+import path from "path";
 
 const app = e();
 app.use(e.json());
@@ -23,11 +26,12 @@ app.use(e.urlencoded({ extended: false }));
 app.use(loggerMiddleware);
 app.use(rateLimiter({ maxRequests: 200, seconds: 60 }));
 
+app.use("/public", e.static(path.join("public")));
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
-// app.use("/api/v1/users", userRouter);
-
+app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/friends", friendsRouter);
 app.use(globalErrors);
 
 export default app;
