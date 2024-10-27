@@ -1,3 +1,4 @@
+import FriendRequest from "../models/friendRequestsSchema.js";
 import User from "../models/user.js";
 
 export const sendFriendRequestSchema = {
@@ -9,15 +10,32 @@ export const sendFriendRequestSchema = {
     custom: {
       options: async (value, { req }) => {
         const receiver = await User.findOne({
-          $or: [{ email: value }, { username: value }, { phone: value }],
+          $or: [
+            { email: value },
+            { username: value },
+            { phone: value },
+            { _id: value },
+          ],
         });
 
+        const isSentBefore = await FriendRequest.findOne({
+          from: req.user,
+          to: receiver,
+          acceptance: "pending",
+        });
+
+        if (isSentBefore) {
+          return Promise.reject(
+            "The receiver Must Accept or Reject the first request",
+          );
+        }
         if (!receiver) {
           return Promise.reject("User Does not exists");
         }
         if (receiver.id === req.user.id) {
-          return  Promise.reject("You cannot send a friend request to yourself");
+          return Promise.reject("You cannot send a friend request to yourself");
         }
+
         req.receiver = receiver;
       },
     },

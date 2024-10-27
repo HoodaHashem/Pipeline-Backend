@@ -24,7 +24,7 @@ app.use(
 app.use(cookieParser());
 app.use(e.urlencoded({ extended: false }));
 app.use(loggerMiddleware);
-app.use(rateLimiter({ maxRequests: 200, seconds: 60 }));
+app.use(rateLimiter({ maxRequests: 300, seconds: 60 }));
 
 app.use("/public", e.static(path.join("public")));
 app.use("/api/v1/health", healthRouter);
