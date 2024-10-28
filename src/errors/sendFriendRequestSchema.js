@@ -10,12 +10,7 @@ export const sendFriendRequestSchema = {
     custom: {
       options: async (value, { req }) => {
         const receiver = await User.findOne({
-          $or: [
-            { email: value },
-            { username: value },
-            { phone: value },
-            { _id: value },
-          ],
+          $or: [{ email: value }, { username: value }, { phone: value }],
         });
 
         const isSentBefore = await FriendRequest.findOne({
