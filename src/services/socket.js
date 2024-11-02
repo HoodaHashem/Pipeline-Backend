@@ -1,11 +1,16 @@
 import { Server } from "socket.io";
 import "dotenv/config";
 import User from "../models/user.js";
+import socketHandler from "../socketHandlers/socketHandler.js";
+import getFriendRequests from "../socketHandlers/getFriendRequests.js";
+import FriendRequest from "../models/friendRequestsSchema.js";
+import broadcastFriendRequestUpdate from "../socketHandlers/broadcastFriendRequestUpdate.js";
 
 const setupSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL,
+      origin: "*",
+      methods: ["GET", "POST", "PATCH", "DELETE"],
       credentials: true,
     },
   });
@@ -17,6 +22,21 @@ const setupSocket = (server) => {
 
     if (userId) {
       activeUsers.set(userId, socket.id);
+
+      socket.join(userId.toString());
+
+      socket.on("requestFriendRequests", () => {
+        getFriendRequests();
+      });
+
+      socket.on("sendFriendRequest", async (toUserId) => {
+        await FriendRequest.create({
+          from: userId,
+          to: toUserId,
+        });
+
+        await broadcastFriendRequestUpdate(io, [userId, toUserId]);
+      });
     }
 
     const fetchUserInfo = async () => {
@@ -31,6 +51,8 @@ const setupSocket = (server) => {
     };
 
     fetchUserInfo();
+
+    socketHandler(socket, userId);
 
     socket.on("disconnect", () => {
       if (userId && activeUsers.get(userId) === socket.id) {
