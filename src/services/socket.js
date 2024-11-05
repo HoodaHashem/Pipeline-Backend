@@ -25,34 +25,8 @@ const setupSocket = (server) => {
 
       socket.join(userId.toString());
 
-      socket.on("requestFriendRequests", () => {
-        getFriendRequests();
-      });
-
-      socket.on("sendFriendRequest", async (toUserId) => {
-        await FriendRequest.create({
-          from: userId,
-          to: toUserId,
-        });
-
-        await broadcastFriendRequestUpdate(io, [userId, toUserId]);
-      });
+      socketHandler(io, socket, userId);
     }
-
-    const fetchUserInfo = async () => {
-      try {
-        const user = await User.findById(userId);
-        if (user) {
-          socket.emit("userInfo", user);
-        }
-      } catch (error) {
-        socket.emit("userInfoError", "Failed to fetch user information");
-      }
-    };
-
-    fetchUserInfo();
-
-    socketHandler(socket, userId);
 
     socket.on("disconnect", () => {
       if (userId && activeUsers.get(userId) === socket.id) {

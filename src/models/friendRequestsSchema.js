@@ -20,6 +20,9 @@ const friendRequestsSchema = new Schema({
     enum: ["accepted", "rejected", "pending"],
     default: "pending",
   },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 const FriendRequest = mongoose.model("FriendRequest", friendRequestsSchema);
