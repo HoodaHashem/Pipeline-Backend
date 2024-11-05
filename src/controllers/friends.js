@@ -43,7 +43,7 @@ export const sendFriendRequest = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const SearchForFriend = (req, res, next) => {
+export const SearchForFriend = (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -56,37 +56,3 @@ export const SearchForFriend = (req, res, next) => {
     users: req.searchResult,
   });
 };
-
-// export const acceptFriendRequest = asyncHandler(async (req, res, next) => {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     return res.status(400).json({
-//       status: "fail",
-//       errors: errors.array(),
-//     });
-//   }
-//   const request = req.request;
-//   request.accptance = "accepted";
-//   request.save();
-//   return res.status(200).json({
-//     status: "success",
-//     message: "Accepted",
-//   });
-// });
-//
-// export const rejectFriendRequest = asyncHandler(async (req, res, next) => {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     return res.status(400).json({
-//       status: "fail",
-//       errors: errors.array(),
-//     });
-//   }
-//   const request = req.request;
-//   request.accptance = "rejected";
-//   request.save();
-//   return res.status(200).json({
-//     status: "success",
-//     message: "Rejected",
-//   });
-// });

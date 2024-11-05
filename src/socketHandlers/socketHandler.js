@@ -41,7 +41,7 @@ const socketHandler = (io, socket, userId) => {
       to: userId,
     });
 
-    if (check) {
+    if (check && check.acceptance === "pending") {
       check.acceptance = "accepted";
       check.updatedAt = Date.now();
       const user = await User.findById(userId);

@@ -39,7 +39,7 @@ const checkSearch = {
             {
               $match: {
                 $and: [
-                  { _id: { $ne: req.user._id } }, // Exclude current user
+                  { _id: { $ne: req.user._id } },
                   { fullName: searchRegex },
                 ],
               },
