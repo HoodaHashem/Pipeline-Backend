@@ -55,6 +55,11 @@ const userSchema = new Schema({
   validationTokenExpires: {
     type: Date,
   },
+  status: {
+    type: String,
+    enum: ["online", "typing", "offline"],
+    default: "offline",
+  },
 });
 
 const User = mongoClient.model("User", userSchema);
