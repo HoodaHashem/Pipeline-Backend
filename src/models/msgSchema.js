@@ -25,6 +25,8 @@ const msgSchema = new mongoose.Schema({
   },
 });
 
+msgSchema.index({ chatId: 1, timestamp: -1 });
+
 const Message = mongoClient.model("Message", msgSchema);
 
 export default Message;
