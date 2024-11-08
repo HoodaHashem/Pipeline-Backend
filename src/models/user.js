@@ -62,6 +62,7 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.index({friends: 1})
 const User = mongoClient.model("User", userSchema);
 
 export default User;
