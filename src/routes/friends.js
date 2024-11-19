@@ -7,7 +7,6 @@ import {
 } from "../controllers/friends.js";
 import { checkSchema } from "express-validator";
 import { sendFriendRequestSchema } from "../errors/sendFriendRequestSchema.js";
-import { checkFriendRequestSchema } from "../errors/checkFriendRequest.js";
 import checkSearch from "../errors/checkSearch.js";
 
 const friendsRouter = Router();
@@ -23,17 +22,5 @@ friendsRouter.post(
 );
 
 friendsRouter.post("/search", checkSchema(checkSearch), SearchForFriend);
-
-// friendsRouter.post(
-//   "/accept/:id",
-//   checkSchema(checkFriendRequestSchema),
-//   acceptFriendRequest,
-// );
-//
-// friendsRouter.post(
-//   "/reject/:id",
-//   checkSchema(checkFriendRequestSchema),
-//   rejectFriendRequest,
-// );
 
 export default friendsRouter;

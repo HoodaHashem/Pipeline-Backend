@@ -16,7 +16,7 @@ export const sendFriendRequestSchema = {
         const isSentBefore = await FriendRequest.findOne({
           from: req.user,
           to: receiver,
-          acceptance: "pending",
+          status: "pending",
         });
 
         if (isSentBefore) {

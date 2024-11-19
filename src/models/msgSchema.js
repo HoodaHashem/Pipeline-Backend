@@ -1,32 +1,58 @@
 import mongoose from "mongoose";
-import mongoClient from "../configs/mongoClient";
+import mongoClient from "../configs/mongoClient.js";
 
-const msgSchema = new mongoose.Schema({
-  chatId: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: "Chat",
+const messageSchema = new mongoose.Schema(
+  {
+    chatId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
+      required: true,
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    contentType: {
+      type: String,
+      enum: ["text", "image", "file"],
+      default: "text",
+    },
+    status: {
+      type: String,
+      enum: ["sent", "delivered", "read"],
+      default: "sent",
+    },
+    readBy: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        readAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    deletedFor: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
-  sender: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: "User",
+  {
+    timestamps: true,
   },
-  timestamp: {
-    type: Date,
-    default: Date.now,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["sent", "delivered", "read"],
-    default: "sent",
-  },
-});
+);
 
-msgSchema.index({ chatId: 1, timestamp: -1 });
-
-const Message = mongoClient.model("Message", msgSchema);
-
+messageSchema.index({ chatId: 1, createdAt: -1 });
+messageSchema.index({ sender: 1 });
+const Message = mongoClient.model("Message", messageSchema);
 export default Message;

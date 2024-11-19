@@ -1,15 +1,42 @@
 import mongoose from "mongoose";
-import mongoClient from "../configs/mongoClient";
+import mongoClient from "../configs/mongoClient.js";
 
-const chatSchema = mongoose.Schema({
-  participants: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
-  lstMsg: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: "Message",
+const chatSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["direct", "group"],
+      required: true,
+    },
+    name: {
+      type: String,
+      trim: true, // For group chats
+    },
+    participants: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    admins: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    lastMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+    },
   },
-  updatedAt: { type: Date, default: Date.now },
-});
+  {
+    timestamps: true,
+  },
+);
 
-const Chat = mongoClient("Chat", chatSchema);
+chatSchema.index({ participants: 1 });
+chatSchema.index({ updatedAt: -1 });
+
+const Chat = mongoClient.model("Chat", chatSchema);
 
 export default Chat;

@@ -1,6 +1,8 @@
-import { request, Router } from "express";
+import { Router } from "express";
 import User from "../models/user.js";
 import FriendRequest from "../models/friendRequestsSchema.js";
+import Chat from "../models/chatSchema.js";
+import Message from "../models/msgSchema.js";
 
 const adminRouter = Router();
 
@@ -37,6 +39,40 @@ adminRouter.get("/requests", async (req, res) => {
     data: {
       requests: await FriendRequest.find(),
     },
+  });
+});
+
+adminRouter.get("/chats", async (req, res) => {
+  res.status(200).json({
+    status: "success",
+    data: {
+      chats: await Chat.find(),
+    },
+  });
+});
+
+adminRouter.delete("/chats", async (req, res) => {
+  await Chat.deleteMany().then(() => {
+    res.status(200).json({
+      status: "success",
+    });
+  });
+});
+
+adminRouter.get("/msgs", async (req, res) => {
+  res.status(200).json({
+    status: "success",
+    data: {
+      messages: await Message.find(),
+    },
+  });
+});
+
+adminRouter.delete("/msgs", async (req, res) => {
+  await Message.deleteMany().then(() => {
+    res.status(200).json({
+      status: "success",
+    });
   });
 });
 

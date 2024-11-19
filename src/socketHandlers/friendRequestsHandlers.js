@@ -25,6 +25,7 @@ const friendRequestsHandlers = (io, socket, userId) => {
     const sendBefore = await FriendRequest.findOne({
       from: userId,
       to: toUserId,
+      status: "pending",
     });
     if (!sendBefore) {
       await FriendRequest.create({
@@ -52,10 +53,11 @@ const friendRequestsHandlers = (io, socket, userId) => {
     const check = await FriendRequest.findOne({
       from: toUserId,
       to: userId,
+      status: "pending",
     });
 
-    if (check && check.acceptance === "pending") {
-      check.acceptance = "accepted";
+    if (check && check.status === "pending") {
+      check.status = "accepted";
       check.updatedAt = Date.now();
       const user = await User.findById(userId);
       const friend = await User.findById(toUserId);
@@ -81,7 +83,7 @@ const friendRequestsHandlers = (io, socket, userId) => {
     });
 
     if (check) {
-      check.acceptance = "rejected";
+      check.status = "rejected";
       check.updatedAt = Date.now();
       await check.save();
     }

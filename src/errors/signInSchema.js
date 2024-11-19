@@ -3,18 +3,19 @@ import bcrypt from "bcrypt";
 
 export const signInValidationSchema = {
   userIdentifier: {
-    notEmpty: {
-      errorMessage: "Identifier is required",
-    },
     custom: {
       options: async (value, { req }) => {
-        const user = await User.findOne({
-          $or: [{ email: value }, { username: value }, { phone: value }],
-        });
-        if (!user) {
-          return Promise.reject("User does not exists");
+        if (value.trim().length > 0) {
+          const user = await User.findOne({
+            $or: [{ email: value }, { username: value }, { phone: value }],
+          });
+          if (!user) {
+            return Promise.reject("User does not exists");
+          }
+          req.user = user;
+        } else {
+          return Promise.reject("Identifier is required");
         }
-        req.user = user;
       },
     },
   },
@@ -24,11 +25,21 @@ export const signInValidationSchema = {
     },
     custom: {
       options: async (value, { req }) => {
-        if (req.user) {
-          const isMatch = await bcrypt.compare(value, req.user.password);
+        const { userIdentifier } = req.body;
+        const user = await User.findOne({
+          $or: [
+            { email: userIdentifier },
+            { username: userIdentifier },
+            { phone: userIdentifier },
+          ],
+        }).select("+password");
+
+        if (user) {
+          const isMatch = await bcrypt.compare(value, user.password);
           if (!isMatch) {
             return Promise.reject("Incorrect password");
           }
+          req.user = user;
         }
       },
     },

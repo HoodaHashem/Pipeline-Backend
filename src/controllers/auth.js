@@ -43,7 +43,7 @@ export const signup = asyncHandler(async (req, res) => {
 export const signIn = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (errors.array().length !== 0) {
-    return res.status(401).json({
+    return res.status(400).json({
       status: "fail",
       errors: errors.array(),
     });
