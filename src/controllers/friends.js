@@ -3,6 +3,14 @@ import asyncHandler from "../utils/asyncHandler.js";
 import FriendRequest from "../models/friendRequestsSchema.js";
 
 export const getAllFriendRequests = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      status: "fail",
+      errors: errors.array(),
+    });
+  }
+
   const user = req.user;
   const outgoingRequests = await FriendRequest.find({
     from: user._id,

@@ -11,6 +11,7 @@ import rateLimiter from "./utils/rateLimiter.js";
 import usersRouter from "./routes/users.js";
 import friendsRouter from "./routes/friends.js";
 import path from "path";
+import chatsRouter from "./routes/chats.js";
 
 const app = e();
 app.use(e.json());
@@ -32,6 +33,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/friends", friendsRouter);
+app.use("/api/v1/chats", chatsRouter);
 app.use(globalErrors);
 
 export default app;
