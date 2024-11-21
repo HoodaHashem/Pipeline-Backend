@@ -1,3 +1,4 @@
+import Chat from "../models/chatSchema.js";
 import Message from "../models/msgSchema.js";
 
 const messagesHandlers = (io, socket, userId) => {
@@ -10,8 +11,20 @@ const messagesHandlers = (io, socket, userId) => {
       });
 
       await newMsg.save();
-      io.to(receiverId).emit("message:receive", content);
-      io.to(userId).emit("message:receive", content);
+      const updatedChat = await Chat.findByIdAndUpdate(
+        chatId,
+        { lastMessage: newMsg._id },
+        { new: true },
+      )
+        .populate({
+          path: "lastMessage",
+          select: "content",
+        })
+        .lean();
+      io.to(receiverId).emit("message:receive", newMsg);
+      io.to(userId).emit("message:receive", newMsg);
+      io.to(receiverId).emit("contacts:update", updatedChat);
+      io.to(userId).emit("contacts:update", updatedChat);
     } catch {
       console.error("error sending the message");
     }

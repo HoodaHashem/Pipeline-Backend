@@ -1,4 +1,5 @@
 import Chat from "../models/chatSchema.js";
+import Message from "../models/msgSchema.js";
 
 const chatsHandlers = (io, socket, userId) => {
   socket.on(
@@ -47,6 +48,22 @@ const chatsHandlers = (io, socket, userId) => {
         // TODO: Handle group chat creation here
       }
     },
+
+    socket.on("getChatInfo", async ({ chatId, userId }) => {
+      const chat = await Chat.findById(chatId).populate({
+        path: "participants",
+        select: "fullName username phone photo email",
+      });
+
+      const messages = await Message.find({
+        chatId,
+        deletedFor: { $ne: userId },
+      })
+        .sort({ createdAt: 1 })
+        .select("-deletedFor");
+
+      io.to(userId).emit("chatInfo:receive", { chat, messages });
+    }),
   );
 };
 

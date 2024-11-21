@@ -22,7 +22,9 @@ export const getChatInfo = asyncHandler(async (req, res) => {
   const messages = await Message.find({
     chatId,
     deletedFor: { $ne: req.user.id },
-  }).sort({ createdAt: 1 });
+  })
+    .sort({ createdAt: 1 })
+    .select("-deletedFor");
 
   return res.status(200).json({
     status: "success",
