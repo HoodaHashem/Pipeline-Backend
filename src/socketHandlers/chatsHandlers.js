@@ -8,7 +8,7 @@ const chatsHandlers = (io, socket, userId) => {
       participants.push(userId);
 
       if (chatType === "direct") {
-        const exists = await Chat.findOne({
+        const chat = await Chat.findOne({
           type: chatType,
           participants: { $all: participants },
         })
@@ -20,8 +20,14 @@ const chatsHandlers = (io, socket, userId) => {
           .populate("lastMessage")
           .sort({ updatedAt: -1 });
 
-        if (exists) {
-          socket.emit("getChats", exists);
+        if (chat) {
+          const messages = await Message.find({
+            chatId: chat.id,
+            deletedFor: { $ne: userId },
+          })
+            .sort({ createdAt: 1 })
+            .select("-deletedFor");
+          socket.emit("getChats", { chat, messages });
           return;
         }
 
@@ -32,13 +38,11 @@ const chatsHandlers = (io, socket, userId) => {
 
         await newChat.save();
 
-        const savedChat = await Chat.findById(newChat._id)
-          .populate({
-            path: "participants",
-            select: "username fullName photo status lastSeen",
-            match: { _id: { $ne: userId } },
-          })
-          .populate("lastMessage");
+        const savedChat = await Chat.findById(newChat._id).populate({
+          path: "participants",
+          select: "username fullName photo status lastSeen",
+          match: { _id: { $ne: userId } },
+        });
 
         socket.emit("getChats", savedChat);
         return;
